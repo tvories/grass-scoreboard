@@ -43,9 +43,9 @@ def index():
     return "adding new score"
 
 
-@app.route('/api/v1.0/set_score', methods=['POST'], username=username, id=id)
-def set_scores():
-    set_score()
+# @app.route('/api/v1.0/set_score', methods=['POST'], username=username, id=id)
+# def set_scores():
+#     set_score()
 
 
 if __name__ == '__main__':
