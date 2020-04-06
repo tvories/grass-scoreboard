@@ -1,23 +1,41 @@
 #!flask/bin/python
-from flask import Flask, jsonify
+from flask import Flask, request, jsonify
 from random import randint, seed
+import json
+import copy
 
 app = Flask(__name__)
 
 scores = [
     {
-        'id': 1,
-        'user': 'tayloriscool',
-        'score': 200001
+        'id': 2,
+        'user': 'KingMowerB',
+        'score': 2
     },
     {
-        'id': 2,
-        'user': 'brandumb',
-        'score': 4
+        'id': 1,
+        'user': 'taylorMowedOneGrass',
+        'score': 1
+    },
+    {
+        'id': 3,
+        'user': 'randomPerson',
+        'score': 3
     }
 ]
 
+scores_ranked = []
 id_value = 3
+
+@app.route('/api/v1.0/recive_score_data', methods=['POST'])
+def recive_score_data():
+    try:
+        receved_data = json.loads(list(request.form.to_dict().keys())[0])
+        set_score(receved_data["user"], receved_data["score"], receved_data["id"])
+        #rank_scores()
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        return f"An Error Occured: {e}"
 
 
 def set_score(username, score, id_num):
@@ -29,9 +47,33 @@ def set_score(username, score, id_num):
     scores.append(score)
 
 
+def rank_scores():
+    _scores_ranked = []
+    temp_list = copy.copy(scores)
+    catcher = 100000
+    x = 0
+    while(temp_list):
+        x += 1
+        if(x >= catcher):
+            print('catched!')
+            return
+        highest = 0
+        indexSave = 0
+        i = 0
+        for score in temp_list:
+            if(score['score'] > highest):
+                highest = score['score']
+                indexSave = i
+            i += 1
+        _scores_ranked.append(temp_list[indexSave])
+        temp_list.pop(indexSave)
+    return _scores_ranked
+
 @app.route('/api/v1.0/scores', methods=['GET'])
 def get_scores():
-    return jsonify({'scores': scores})
+    scores_ranked = rank_scores()
+    return jsonify({'scores': scores_ranked})
+    #return jsonify({'scores': scores})
 
 
 @app.route('/')
@@ -50,7 +92,8 @@ def index():
 
 if __name__ == '__main__':
     app.run(debug=True)
-    seed(2)
+    #seed(2)
+    #rank_scores()
 
 
 
