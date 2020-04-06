@@ -22,6 +22,11 @@ scores = [
         'user': 'randomPerson',
         'score': 3
     }
+    {
+        'id': 5,
+        'user': 'Madness',
+        'score': 12
+    },
 ]
 
 scores_ranked = []
