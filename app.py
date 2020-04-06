@@ -25,7 +25,7 @@ scores = [
     {
         'id': 5,
         'user': 'Madness',
-        'score': 12
+        'score': 120
     },
 ]
 
