@@ -3,8 +3,10 @@ from flask import Flask, request, jsonify
 from random import randint, seed
 import json
 import copy
+from faker import Faker
 
 app = Flask(__name__)
+fake = Faker('en-US')
 
 scores = [
     {
@@ -17,6 +19,23 @@ scores = [
 
 scores_ranked = []
 id_value = 3
+NUM_GENERATED_SCORES = 15
+
+
+def score_generator():
+    for i in range(0, NUM_GENERATED_SCORES):
+        temp_id = randint(id_value, 100)
+        temp_user = fake.name()
+        temp_score = randint(1,100000)
+        temp_mac = "00:00:00:00:00"
+        score = {
+            'id': temp_id,
+            'user': temp_user,
+            'score': temp_score,
+            'MACId': temp_mac
+        }
+        scores.append(score)
+
 
 def unique_user_check(new_entry):
     score_updated = False
@@ -27,6 +46,7 @@ def unique_user_check(new_entry):
             score['score'] = new_entry['score']
             score_updated = True
     return score_updated
+
 
 @app.route('/api/v1.0/recive_score_data', methods=['POST'])
 def recive_score_data():
@@ -39,6 +59,7 @@ def recive_score_data():
     except Exception as e:
         return f"An Error Occured: {e}"
 
+
 def set_score(username, score, id_num, _MACId):
     score = {
         'id': id_num,
@@ -47,6 +68,7 @@ def set_score(username, score, id_num, _MACId):
         'MACId': _MACId
     }
     scores.append(score)
+
 
 def rank_scores():
     _scores_ranked = []
@@ -70,6 +92,7 @@ def rank_scores():
         temp_list.pop(indexSave)
     return _scores_ranked
 
+
 @app.route('/api/v1.0/scores', methods=['GET'])
 def get_scores():
     scores_ranked = rank_scores()
@@ -92,7 +115,9 @@ def index():
 
 
 if __name__ == '__main__':
+    score_generator()
     app.run(debug=True)
+
     #seed(2)
     #rank_scores()
 
