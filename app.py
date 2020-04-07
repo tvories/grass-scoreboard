@@ -10,47 +10,43 @@ scores = [
     {
         'id': 2,
         'user': 'KingMowerB',
-        'score': 2
-    },
-    {
-        'id': 1,
-        'user': 'taylorMowedOneGrass',
-        'score': 1
-    },
-    {
-        'id': 3,
-        'user': 'randomPerson',
-        'score': 3
+        'score': 2,
+        'MACId': "ComputerName"
     }
-    {
-        'id': 5,
-        'user': 'Madness',
-        'score': 120
-    },
 ]
 
 scores_ranked = []
 id_value = 3
 
+def unique_user_check(new_entry):
+    score_updated = False
+    user_check = new_entry["MACId"]
+    for score in scores:
+        if(user_check == score['MACId']):
+            score['user'] = new_entry['user']
+            score['score'] = new_entry['score']
+            score_updated = True
+    return score_updated
+
 @app.route('/api/v1.0/recive_score_data', methods=['POST'])
 def recive_score_data():
     try:
         receved_data = json.loads(list(request.form.to_dict().keys())[0])
-        set_score(receved_data["user"], receved_data["score"], receved_data["id"])
-        #rank_scores()
+        score_updated = unique_user_check(receved_data)
+        if(score_updated == False):
+            set_score(receved_data["user"], receved_data["score"], receved_data["id"],receved_data["MACId"])
         return jsonify({"success": True}), 200
     except Exception as e:
         return f"An Error Occured: {e}"
 
-
-def set_score(username, score, id_num):
+def set_score(username, score, id_num, _MACId):
     score = {
         'id': id_num,
         'user': username,
-        'score': score
+        'score': score,
+        'MACId': _MACId
     }
     scores.append(score)
-
 
 def rank_scores():
     _scores_ranked = []
@@ -77,6 +73,7 @@ def rank_scores():
 @app.route('/api/v1.0/scores', methods=['GET'])
 def get_scores():
     scores_ranked = rank_scores()
+    print(scores_ranked)
     return jsonify({'scores': scores_ranked})
     #return jsonify({'scores': scores})
 
@@ -88,7 +85,6 @@ def index():
     username = "usernamecool" + str(id_rand)
     set_score(username, score_rand, id_rand)
     return "adding new score"
-
 
 # @app.route('/api/v1.0/set_score', methods=['POST'], username=username, id=id)
 # def set_scores():
